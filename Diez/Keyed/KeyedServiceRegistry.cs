@@ -27,7 +27,7 @@ namespace Diez.Keyed
 
             _services.TryAdd(
                 factory is null
-                    ? new ServiceDescriptor(implementationType, lifetime)
+                    ? new ServiceDescriptor(implementationType, implementationType, lifetime)
                     : new(implementationType, (serviceProvider) => factory(serviceProvider), lifetime)
             );
         }
@@ -48,7 +48,7 @@ namespace Diez.Keyed
 
             _services.TryAdd(
                 factory is null
-                    ? new ServiceDescriptor(implementationType, lifetime)
+                    ? new ServiceDescriptor(implementationType, implementationType, lifetime)
                     : new(implementationType, (serviceProvider) => factory(serviceProvider), lifetime)
             );
         }
