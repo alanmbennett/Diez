@@ -1,16 +1,14 @@
+using Diez.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Diez.Decorators
 {
-    public class DecoratorRegistry<TService>
+    internal class DecoratorRegistry<TService> : BaseRegistry<TService>
     { 
-        private readonly IServiceCollection _services;
-        
         private readonly IList<Type> _decorators;
         
-        public DecoratorRegistry(IServiceCollection services)
+        public DecoratorRegistry(IServiceCollection services) : base(services)
         {
-            _services = services;
             _decorators = new List<Type>();
         }
     }
