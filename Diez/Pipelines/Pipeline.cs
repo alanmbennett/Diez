@@ -1,13 +1,12 @@
 namespace Diez.Pipelines
 {
-    internal class Pipeline<TPipelineStep, TModel> : IPipeline<TPipelineStep, TModel>
-        where TPipelineStep : IPipelineStep<TModel>
+    internal class Pipeline<TModel> : IPipeline<TModel>
     {
         private readonly IServiceProvider _provider;
 
-        private readonly IEnumerable<Func<IServiceProvider, TPipelineStep>> _steps;
+        private readonly IEnumerable<Func<IServiceProvider, IPipelineStep<TModel>>> _steps;
         
-        public Pipeline(IServiceProvider provider, IEnumerable<Func<IServiceProvider, TPipelineStep>> steps)
+        public Pipeline(IServiceProvider provider, IEnumerable<Func<IServiceProvider, IPipelineStep<TModel>>> steps)
         {
             _provider = provider;
             _steps = steps;
@@ -24,14 +23,13 @@ namespace Diez.Pipelines
         }
     }
 
-    internal class AsyncPipeline<TPipelineStep, TModel> : IAsyncPipeline<TPipelineStep, TModel>
-        where TPipelineStep : IAsyncPipelineStep<TModel>
+    internal class AsyncPipeline<TModel> : IAsyncPipeline<TModel>
     {
         private readonly IServiceProvider _provider;
 
-        private readonly IEnumerable<Func<IServiceProvider, TPipelineStep>> _steps;
+        private readonly IEnumerable<Func<IServiceProvider, IAsyncPipelineStep<TModel>>> _steps;
         
-        public AsyncPipeline(IServiceProvider provider, IEnumerable<Func<IServiceProvider, TPipelineStep>> steps)
+        public AsyncPipeline(IServiceProvider provider, IEnumerable<Func<IServiceProvider, IAsyncPipelineStep<TModel>>> steps)
         {
             _provider = provider;
             _steps = steps;

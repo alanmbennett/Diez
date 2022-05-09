@@ -3,25 +3,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Diez.Pipelines
 {
-    internal class KeyedPipelineRegistry<TKey, TPipelineStep, TModel> 
-        : KeyedServiceRegistry<TKey, IPipeline<TPipelineStep, TModel>>, 
-        IKeyedPipelineRegistry<TKey, TPipelineStep>
-        where TPipelineStep : IPipelineStep<TModel>
+    internal class KeyedPipelineRegistry<TKey, TModel> 
+        : KeyedServiceRegistry<TKey, IPipeline<TModel>>, 
+        IKeyedPipelineRegistry<TKey, IPipelineStep<TModel>>
         where TKey : notnull
     {   
         public KeyedPipelineRegistry(IServiceCollection services) : base(services) { }
 
         public void AddPipeline(
             TKey keyValue,
-            Action<IPipelineRegistry<TPipelineStep>> registryAction    
+            Action<IPipelineRegistry<IPipelineStep<TModel>>> registryAction    
         )
         {
-            var registry = new PipelineRegistry<TPipelineStep>(_services);
+            var registry = new PipelineRegistry<IPipelineStep<TModel>>(_services);
             registryAction(registry);
 
             AddSingleton(
                 keyValue,
-                provider => new Pipeline<TPipelineStep, TModel>(
+                provider => new Pipeline<TModel>(
                     provider, 
                     registry.GetList()
                 )
@@ -29,25 +28,24 @@ namespace Diez.Pipelines
         }
     }
 
-    internal class KeyedAsyncPipelineRegistry<TKey, TPipelineStep, TModel> 
-        : KeyedServiceRegistry<TKey, IAsyncPipeline<TPipelineStep, TModel>>, 
-        IKeyedPipelineRegistry<TKey, TPipelineStep>
-        where TPipelineStep : IAsyncPipelineStep<TModel>
+    internal class KeyedAsyncPipelineRegistry<TKey, TModel> 
+        : KeyedServiceRegistry<TKey, IAsyncPipeline<TModel>>, 
+        IKeyedPipelineRegistry<TKey, IAsyncPipelineStep<TModel>>
         where TKey : notnull
     {   
         public KeyedAsyncPipelineRegistry(IServiceCollection services) : base(services) { }
 
         public void AddPipeline(
             TKey keyValue,
-            Action<IPipelineRegistry<TPipelineStep>> registryAction    
+            Action<IPipelineRegistry<IAsyncPipelineStep<TModel>>> registryAction    
         )
         {
-            var registry = new PipelineRegistry<TPipelineStep>(_services);
+            var registry = new PipelineRegistry<IAsyncPipelineStep<TModel>>(_services);
             registryAction(registry);
 
             AddSingleton(
                 keyValue,
-                provider => new AsyncPipeline<TPipelineStep, TModel>(
+                provider => new AsyncPipeline<TModel>(
                     provider, 
                     registry.GetList()
                 )

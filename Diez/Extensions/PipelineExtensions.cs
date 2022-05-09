@@ -5,60 +5,56 @@ namespace Diez.Extensions
 {
     public static class PipelineExtensions
     { 
-        public static void AddPipeline<TPipelineStep, TModel>(
+        public static void AddPipeline<TModel>(
             this IServiceCollection services, 
-            Action<IPipelineRegistry<TPipelineStep>> registryAction    
+            Action<IPipelineRegistry<IPipelineStep<TModel>>> registryAction    
         )
-            where TPipelineStep : IPipelineStep<TModel>
         {
-            var registry = new PipelineRegistry<TPipelineStep>(services);
+            var registry = new PipelineRegistry<IPipelineStep<TModel>>(services);
             registryAction(registry);
 
-            services.AddSingleton<IPipeline<TPipelineStep, TModel>>(
-                provider => new Pipeline<TPipelineStep, TModel>(
+            services.AddSingleton<IPipeline<TModel>>(
+                provider => new Pipeline<TModel>(
                     provider, 
                     registry.GetList()
                 )
             );
         }
 
-        public static void AddKeyedPipelines<TKey, TPipelineStep, TModel>(
+        public static void AddKeyedPipelines<TKey, TModel>(
             this IServiceCollection services, 
-            Action<IKeyedPipelineRegistry<TKey, TPipelineStep>> registryAction    
+            Action<IKeyedPipelineRegistry<TKey, IPipelineStep<TModel>>> registryAction    
         )
-            where TPipelineStep : IPipelineStep<TModel>
             where TKey : notnull
         {
-            var registry = new KeyedPipelineRegistry<TKey, TPipelineStep, TModel>(services);
+            var registry = new KeyedPipelineRegistry<TKey, TModel>(services);
             registryAction(registry);
             services.RegisterKeyedServiceDictionary(registry);
         }
         
-        public static void AddAsyncPipeline<TPipelineStep, TModel>(
+        public static void AddAsyncPipeline<TModel>(
             this IServiceCollection services, 
-            Action<IPipelineRegistry<TPipelineStep>> registryAction    
+            Action<IPipelineRegistry<IAsyncPipelineStep<TModel>>> registryAction    
         )
-            where TPipelineStep : IAsyncPipelineStep<TModel>
         {
-            var registry = new PipelineRegistry<TPipelineStep>(services);
+            var registry = new PipelineRegistry<IAsyncPipelineStep<TModel>>(services);
             registryAction(registry);
 
-            services.AddSingleton<IAsyncPipeline<TPipelineStep, TModel>>(
-                provider => new AsyncPipeline<TPipelineStep, TModel>(
+            services.AddSingleton<IAsyncPipeline<TModel>>(
+                provider => new AsyncPipeline<TModel>(
                     provider, 
                     registry.GetList()
                 )
             );
         }
 
-        public static void AddKeyedAsyncPipelines<TKey, TPipelineStep, TModel>(
+        public static void AddKeyedAsyncPipelines<TKey, TModel>(
             this IServiceCollection services, 
-            Action<IKeyedPipelineRegistry<TKey, TPipelineStep>> registryAction    
+            Action<IKeyedPipelineRegistry<TKey, IAsyncPipelineStep<TModel>>> registryAction    
         )
-            where TPipelineStep : IAsyncPipelineStep<TModel>
             where TKey : notnull
         {
-            var registry = new KeyedAsyncPipelineRegistry<TKey, TPipelineStep, TModel>(services);
+            var registry = new KeyedAsyncPipelineRegistry<TKey, TModel>(services);
             registryAction(registry);
             services.RegisterKeyedServiceDictionary(registry);
         }
