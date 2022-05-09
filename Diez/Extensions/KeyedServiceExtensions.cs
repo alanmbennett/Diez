@@ -12,8 +12,16 @@ namespace Diez.Extensions
             where TKey : notnull
         {
             var registry = new KeyedServiceRegistry<TKey, TService>(services);
-            registryAction(registry);
-            
+            registryAction(registry);      
+            services.RegisterKeyedServiceDictionary(registry);
+        }
+
+        internal static void RegisterKeyedServiceDictionary<TKey, TService>(
+            this IServiceCollection services, 
+            KeyedServiceRegistry<TKey, TService> registry
+        )
+            where TKey : notnull
+        {
             services.AddSingleton<IKeyedServiceDictionary<TKey, TService>>(
                 provider => new KeyedServiceDictionary<TKey, TService>(provider, registry.GetRegisteredServices())
             );

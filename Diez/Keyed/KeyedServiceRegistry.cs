@@ -7,7 +7,7 @@ namespace Diez.Keyed
         : IKeyedServiceRegistry<TKey, TService>
         where TKey: notnull
     {  
-        private readonly IServiceCollection _services;
+        protected readonly IServiceCollection _services;
 
         public KeyedServiceRegistry(IServiceCollection services)
         {
