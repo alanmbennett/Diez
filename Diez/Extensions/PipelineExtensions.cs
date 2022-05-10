@@ -7,18 +7,22 @@ namespace Diez.Extensions
     { 
         public static void AddPipeline<TModel>(
             this IServiceCollection services, 
+            ServiceLifetime pipelineLifetime,
             Action<IPipelineRegistry<IPipelineStep<TModel>>> registryAction    
         )
         {
             var registry = new PipelineRegistry<IPipelineStep<TModel>>(services);
             registryAction(registry);
 
-            services.AddSingleton<IPipeline<TModel>>(
+            var list = registry.GetList().ToList();
+            services.Add(new ServiceDescriptor(
+                typeof(IPipeline<TModel>),
                 provider => new Pipeline<TModel>(
                     provider, 
-                    registry.GetList()
-                )
-            );
+                    list
+                ),
+                pipelineLifetime
+            ));
         }
 
         public static void AddKeyedPipelines<TKey, TModel>(
@@ -34,18 +38,22 @@ namespace Diez.Extensions
         
         public static void AddAsyncPipeline<TModel>(
             this IServiceCollection services, 
+            ServiceLifetime pipelineLifetime,
             Action<IPipelineRegistry<IAsyncPipelineStep<TModel>>> registryAction    
         )
         {
             var registry = new PipelineRegistry<IAsyncPipelineStep<TModel>>(services);
             registryAction(registry);
 
-            services.AddSingleton<IAsyncPipeline<TModel>>(
+            var list = registry.GetList().ToList();
+            services.Add(new ServiceDescriptor(
+                typeof(IAsyncPipeline<TModel>),
                 provider => new AsyncPipeline<TModel>(
                     provider, 
-                    registry.GetList()
-                )
-            );
+                    list
+                ),
+                pipelineLifetime
+            ));
         }
 
         public static void AddKeyedAsyncPipelines<TKey, TModel>(

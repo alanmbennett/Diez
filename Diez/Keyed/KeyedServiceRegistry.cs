@@ -16,7 +16,7 @@ namespace Diez.Keyed
 
         private readonly IDictionary<TKey, Type> _registeredServices = new Dictionary<TKey, Type>();
 
-        private void Add<TImplementation>(
+        protected void Add<TImplementation>(
             TKey keyValue, 
             ServiceLifetime lifetime, 
             Func<IServiceProvider, TImplementation>? factory = null

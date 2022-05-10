@@ -15,12 +15,15 @@ namespace Diez.Tests.Integration
         public void ItWillExecuteEntirePipeline()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddPipeline<TestModel>(registry => 
-            {
-                registry.AddTransient<FirstStep>();
-                registry.AddTransient<SecondStep>();
-                registry.AddTransient<ThirdStep>();
-            });
+            serviceCollection.AddPipeline<TestModel>(
+                ServiceLifetime.Transient,
+                registry => 
+                {
+                    registry.AddTransient<FirstStep>();
+                    registry.AddTransient<SecondStep>();
+                    registry.AddTransient<ThirdStep>();
+                }
+            );
             var provider = serviceCollection.BuildServiceProvider();
 
             var pipeline = provider.GetRequiredService<IPipeline<TestModel>>();
@@ -42,6 +45,7 @@ namespace Diez.Tests.Integration
             {
                 registry.AddPipeline(
                     firstPipelineKey,
+                    ServiceLifetime.Transient,
                     pipelineRegistry => 
                     {
                         pipelineRegistry.AddTransient<FirstStep>();
@@ -51,6 +55,7 @@ namespace Diez.Tests.Integration
 
                 registry.AddPipeline(
                     "LastOne",
+                    ServiceLifetime.Transient,
                     pipelineRegistry => 
                     {
                         pipelineRegistry.AddTransient<ThirdStep>();

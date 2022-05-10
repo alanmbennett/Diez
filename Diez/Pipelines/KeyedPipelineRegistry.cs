@@ -12,17 +12,20 @@ namespace Diez.Pipelines
 
         public void AddPipeline(
             TKey keyValue,
+            ServiceLifetime pipelineLiftime,
             Action<IPipelineRegistry<IPipelineStep<TModel>>> registryAction    
         )
         {
             var registry = new PipelineRegistry<IPipelineStep<TModel>>(_services);
             registryAction(registry);
 
-            AddSingleton(
+            var list = registry.GetList().ToList();
+            Add(
                 keyValue,
+                pipelineLiftime,
                 provider => new Pipeline<TModel>(
                     provider, 
-                    registry.GetList()
+                    list
                 )
             );
         }
@@ -37,17 +40,20 @@ namespace Diez.Pipelines
 
         public void AddPipeline(
             TKey keyValue,
+            ServiceLifetime pipelineLiftime,
             Action<IPipelineRegistry<IAsyncPipelineStep<TModel>>> registryAction    
         )
         {
             var registry = new PipelineRegistry<IAsyncPipelineStep<TModel>>(_services);
             registryAction(registry);
 
-            AddSingleton(
+            var list = registry.GetList().ToList();
+            Add(
                 keyValue,
+                pipelineLiftime,
                 provider => new AsyncPipeline<TModel>(
                     provider, 
-                    registry.GetList()
+                    list
                 )
             );
         }
