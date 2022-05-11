@@ -15,9 +15,16 @@ namespace Diez.Pipelines
         public TModel Start(TModel model)
         {
             var currentModel = model;
-            foreach(var step in _steps)
+            foreach(var stepFactory in _steps)
             {
-                currentModel = step(_provider).Execute(currentModel);
+                var step = stepFactory(_provider);
+                currentModel = step.Execute(currentModel);
+                if(step is IExitablePipelineStep exitableStep
+                    && exitableStep.ExitPipeline)
+                {
+                    exitableStep.ExitPipeline = false;
+                    break;
+                }
             }
             return currentModel;
         }
@@ -38,9 +45,16 @@ namespace Diez.Pipelines
         public async Task<TModel> Start(TModel model)
         {
             var currentModel = model;
-            foreach(var step in _steps)
+            foreach(var stepFactory in _steps)
             {
-                currentModel = await step(_provider).Execute(currentModel);
+                var step = stepFactory(_provider);
+                currentModel = await step.Execute(currentModel);
+                if(step is IExitablePipelineStep exitableStep
+                    && exitableStep.ExitPipeline)
+                {
+                    exitableStep.ExitPipeline = false;
+                    break;
+                }
             }
             return currentModel;
         }

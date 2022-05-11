@@ -36,6 +36,31 @@ namespace Diez.Tests.Integration
         }
 
         [Fact]
+        public void ItWillExitFromPipelineEarly()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddPipeline<TestModel>(
+                ServiceLifetime.Transient,
+                registry => 
+                {
+                    registry.AddTransient<FirstStep>();
+                    registry.AddTransient<ExitStep>();
+                    registry.AddTransient<SecondStep>();
+                    registry.AddTransient<ThirdStep>();
+                }
+            );
+            var provider = serviceCollection.BuildServiceProvider();
+
+            var pipeline = provider.GetRequiredService<IPipeline<TestModel>>();
+            var model = pipeline.Start(new());
+
+            model.Should().BeEquivalentTo(new TestModel
+            {
+                Text = "First step executed EXIT"
+            });
+        }
+
+        [Fact]
         public void ItWillExecuteKeyedPipeline()
         {
             var serviceCollection = new ServiceCollection();
